@@ -1,5 +1,6 @@
 import React from "react";
 import {useForm} from "react-hook-form";
+import {useDispatch} from "react-redux";
 
 function LoginPage() {
   const {
@@ -11,8 +12,14 @@ function LoginPage() {
 
   //   const onSubmit = data => console.log(data);
 
-  function onSubmit(data) {
-    console.log(data);
+  const dispatch = useDispatch();
+  async function onSubmit({email, password}) {
+    const body = {
+      email,
+      password,
+    };
+
+    dispatch(loginUser(body));
   }
 
   const userEmail = {

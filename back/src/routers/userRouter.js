@@ -5,14 +5,14 @@ const {hash, compare} = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 userRouter.get("/", async (req, res) => {
-    try {
-        const user = await User.find();
-      return res.status(200).send({user});
-    } catch (error) {
-        return res.status(400).send({error:error.message});
-    }
-  });
-  
+  try {
+    const user = await User.find({});
+    return res.status(200).send({user});
+  } catch (error) {
+    return res.status(400).send({error: error.message});
+  }
+});
+
 userRouter.post("/register", async (req, res) => {
   try {
     const password = await hash(req.body.password, 10);
@@ -23,9 +23,7 @@ userRouter.post("/register", async (req, res) => {
       createdAt: new Date(),
     }).save();
     return res.status(200).send({user});
-  } catch (error) {
-    console.log(error)
-  }
+  } catch (error) {}
 });
 
 userRouter.post("/login", async (req, res) => {
