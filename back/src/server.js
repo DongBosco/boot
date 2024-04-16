@@ -1,30 +1,29 @@
-const express = require("express")
-const app = express()
-const mongoose = require("mongoose")
-const dotenv = require("dotenv")
-const userRouter= require("./routers/userRouter")
+const express = require("express");
+const app = express();
+const cors = require("cors")
 
-dotenv.config()
-app.use(express.json())
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const userRouter = require("./routers/userRouter");
 
-const server = async () =>{
-    try {
-        await mongoose.connect(process.env.MONGO_URL)
-        console.log("db connected")
-        mongoose.set("debug",true);
+dotenv.config();
+app.use(express.json());
+app.use(cors())
 
-        app.use("/user",userRouter)
-        
-        app.get("/", (req,res)=>{
-            return res.send("hello")    
-        })
-        app.listen(4000, ()=>{
-            console.log("serverOnPort_4000")
-        })
-    } catch (error) {
-        console.log("db fail")
-    }
+const server = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("mongoDB connected");
 
-}
+    mongoose.set("debug", true);
 
-server()
+    app.use("/user", userRouter);
+
+    app.listen(4000, function () {
+      console.log("server on port 4000");
+    });
+  } catch (error) {
+    console.log("연결이 안됐네요!!!!!");
+  }
+};
+server();

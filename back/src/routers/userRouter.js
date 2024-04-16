@@ -1,61 +1,60 @@
-const express = require("express")
-const userRouter = express.Router()
-const User = require("../models/User")
-const {hash, compare} = require("bcryptjs")
-const jwt = require("jsonwebtoken")
+const express = require("express");
+const userRouter = express.Router();
+const User = require("../models/User");
+const {hash, compare} = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-// userRouter.get("/", async (req,res)=>{
-//     const user = await User.find({}, function(err, docs) {
-//         if (!err) { 
-//             console.log(docs);
-//             process.exit();
-//             return res.send({user})
-//         }
-//         else {
-//             throw err;
-//         }
-//     });            
-// })
-userRouter.post("/register",async (req,res)=>{
+userRouter.get("/", async (req, res) => {
     try {
-        const password = await hash(req.body.password,10)
-        const user = await new User({
-            name: req.body.name,
-            email:req.body.email,
-            password: password,
-            createdAt :  new Date()
-        }).save()
-        return res.status(200).send({user});
+        const user = await User.find();
+      return res.status(200).send({user});
     } catch (error) {
-        console.log(error)
+        return res.status(400).send({error:error.message});
     }
-})
+  });
+  
+userRouter.post("/register", async (req, res) => {
+  try {
+    const password = await hash(req.body.password, 10);
+    const user = await new User({
+      name: req.body.name,
+      email: req.body.email,
+      password,
+      createdAt: new Date(),
+    }).save();
+    return res.status(200).send({user});
+  } catch (error) {
+    console.log(error)
+  }
+});
 
-userRouter.post("/login", async(req,res)=>{
-    try {
-        const user = await User.findOne({email:req.body.email})
-        
-        if(!user){
-            return res.status(400).send({error: "이메일을 다시 입력하세요."})
-        }
-        const isMatch = await compare(req.body.password,user.password)
-
-        if(!isMatch){
-            return res.status(400).send({error: "비밀번호를 확인해주세요."})
-        }
-        
-        const payload = {
-            userId:user._id.toHexString(),
-            email:user.email
-        }
-
-        const accessToken = jwt.sign(payload,process.env.SECRET_KEY,{
-            expiresIn: "1h",
-        })
-        return res.status(200).send({user,accessToken,message:"login OK"})
-    } catch (error) {
-        
+userRouter.post("/login", async (req, res) => {
+  try {
+    const user = await User.findOne({email: req.body.email});
+    if (!user) {
+      return res.status(400).send({error: "이메일을 확인해주세요"});
     }
-})
 
-module.exports=userRouter
+    const isMatch = await compare(req.body.password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).send({error: "비밀번호 확인해주세요"});
+    }
+
+    const payload = {
+      userId: user._id.toHexString(),
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
+
+    return res.status(200).send({user, accessToken, message: "로그인성공"});
+  } catch (error) {
+    return res.status(500).send({message: "login fail"});
+  }
+});
+
+module.exports = userRouter;
