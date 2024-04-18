@@ -17,6 +17,9 @@ const server = async () => {
     mongoose.set("debug", true);
 
     app.use("/user", userRouter);
+    app.get("/", (req,res)=>{
+      return res.send("helloWorld!!")
+    })
 
     app.listen(4000, function () {
       console.log("server on port 4000");
