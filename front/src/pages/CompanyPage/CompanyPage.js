@@ -1,7 +1,11 @@
 import React from "react";
 
 function CompanyPage() {
-  return <div>CompanyPage</div>;
+  return <div>
+    <div>
+      company
+    </div>
+  </div>;
 }
 
 export default CompanyPage;
